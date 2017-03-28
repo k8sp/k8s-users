@@ -7,9 +7,9 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/Yancey1989/k8s-users/users"
 	"github.com/golang/glog"
 	"github.com/gorilla/mux"
+	"github.com/k8sp/k8s-users/users"
 	"github.com/topicai/candy"
 )
 
