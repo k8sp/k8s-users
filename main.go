@@ -19,15 +19,6 @@ const (
 	defaultCertFilesRootPath      = "./users"
 )
 
-// UsersBody describe http request body
-// url:     http://<domain>/users
-// method:  POST
-type UsersBody struct {
-	Username  string
-	Namespace string
-	Email     string
-}
-
 func main() {
 	addr := flag.String("addr", ":8080", "Listening address")
 	caCrt := flag.String("ca-crt", "", "CA certificate file, in PEM format")
@@ -50,15 +41,23 @@ func main() {
 func makeUsersHandler(caKey, caCrt, certFilesRootPath, abacPolicyFile string) http.HandlerFunc {
 	return makeSafeHandler(func(w http.ResponseWriter, r *http.Request) {
 		decoder := json.NewDecoder(r.Body)
-		var u UsersBody
+		var u users.UsersBody
 		err := decoder.Decode(&u)
 		candy.Must(err)
 
-		users.WriteCertFiles(caKey, caCrt, certFilesRootPath, u.Username)
+		// Update abac policy file
+		p, err := users.LoadPoliciesfromJSONFile(abacPolicyFile)
+		candy.Must(err)
+		if p.Exists(u) {
+			p.Update(u)
+		} else {
+			p.Append(u)
+		}
+		p.ToJsonFile(abacPolicyFile)
 
-		users.UpdatePolicyFile(u.Username, u.Namespace, abacPolicyFile)
+		// update cert files
+		users.WriteCertFiles(caKey, caCrt, certFilesRootPath, u.Username)
 		// TODO: implement function by docker client:https://github.com/docker/docker/tree/master/client
-		users.RestartContainerByKeyword("apiserver")
 	})
 }
 

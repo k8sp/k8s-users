@@ -2,3 +2,4 @@
 crt.pem
 key.pem
 k8s-users
+testdata/*
