@@ -9,6 +9,6 @@ type UsersBody struct {
 	Email     string
 }
 
-func getDefaultServiceAcccount(username string) string {
-	return "system:serviceaccount:" + username + ":default"
+func getDefaultServiceAcccount(namespace string) string {
+	return "system:serviceaccount:" + namespace + ":default"
 }
