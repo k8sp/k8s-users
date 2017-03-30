@@ -48,6 +48,7 @@
 
 
 ## TODO
-
+- 使用[Docker Client](https://github.com/docker/docker/tree/master/client) 重启APIServer，使用policy文件生效
+- 增加发送email的流程
 - 接口的访问需要认证机制
 - 提供方便操作的web界面
