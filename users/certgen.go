@@ -48,7 +48,7 @@ func WriteCertFiles(caCrt, caKey, certRootPath, username string) {
 	if _, err := os.Stat(userPath); os.IsNotExist(err) {
 		os.Mkdir(userPath, 0744)
 	}
-	crt, key := genCerts(caCrt, caKey, username)
+	key, crt := genCerts(caKey, caCrt, username)
 	crtFile := path.Join(userPath, username+"-crt.pem")
 	keyFile := path.Join(userPath, username+"-key.pem")
 

@@ -1,9 +1,9 @@
 package users
 
-// UsersBody describe http request body
+// Users describe http request body
 // url:     http://<domain>/users
 // method:  POST
-type UsersBody struct {
+type Users struct {
 	Username  string
 	Namespace string
 	Email     string

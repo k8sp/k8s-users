@@ -41,7 +41,7 @@ func main() {
 func makeUsersHandler(caKey, caCrt, certFilesRootPath, abacPolicyFile string) http.HandlerFunc {
 	return makeSafeHandler(func(w http.ResponseWriter, r *http.Request) {
 		decoder := json.NewDecoder(r.Body)
-		var u users.UsersBody
+		var u users.Users
 		err := decoder.Decode(&u)
 		candy.Must(err)
 
@@ -53,7 +53,7 @@ func makeUsersHandler(caKey, caCrt, certFilesRootPath, abacPolicyFile string) ht
 		} else {
 			p.Append(u)
 		}
-		p.ToJsonFile(abacPolicyFile)
+		p.ToJSONFile(abacPolicyFile)
 
 		// update cert files
 		users.WriteCertFiles(caKey, caCrt, certFilesRootPath, u.Username)

@@ -30,9 +30,10 @@ type Spec struct {
 	nonResourcePath string
 }
 
-func (p *Policy) Exists(user UsersBody) bool {
+//Exists whether user has already in polic file
+func (p *Policy) Exists(u Users) bool {
 	for _, r := range p.rules {
-		if r.spec.user == user.Username {
+		if r.spec.user == u.Username {
 			return true
 		}
 	}
@@ -40,12 +41,12 @@ func (p *Policy) Exists(user UsersBody) bool {
 }
 
 //Update policies using param: usersBody
-func (p *Policy) Update(user UsersBody) {
+func (p *Policy) Update(u Users) {
 	for i, r := range p.rules {
-		if r.spec.user == user.Username {
-			p.rules[i] = makeRule(user.Username, user.Namespace)
-		} else if r.spec.user == getDefaultServiceAcccount(user.Namespace) {
-			p.rules[i] = makeRule(getDefaultServiceAcccount(user.Namespace), user.Namespace)
+		if r.spec.user == u.Username {
+			p.rules[i] = makeRule(u.Username, u.Namespace)
+		} else if r.spec.user == getDefaultServiceAcccount(u.Namespace) {
+			p.rules[i] = makeRule(getDefaultServiceAcccount(u.Namespace), u.Namespace)
 		} else {
 			continue
 		}
@@ -53,9 +54,9 @@ func (p *Policy) Update(user UsersBody) {
 }
 
 // Append new policy at the end of policies
-func (p *Policy) Append(user UsersBody) {
-	p.rules = append(p.rules, makeRule(user.Username, user.Namespace))
-	p.rules = append(p.rules, makeRule(user.Username, user.Namespace))
+func (p *Policy) Append(u Users) {
+	p.rules = append(p.rules, makeRule(u.Username, u.Namespace))
+	p.rules = append(p.rules, makeRule(u.Username, u.Namespace))
 }
 
 //LoadPoliciesfromJSONFile init policy struct with json file
@@ -76,7 +77,8 @@ func LoadPoliciesfromJSONFile(filename string) (Policy, error) {
 	return p, nil
 }
 
-func (p *Policy) ToJsonFile(filename string) error {
+//ToJSONFile  write to a file formated json
+func (p *Policy) ToJSONFile(filename string) error {
 	lines := []string{}
 	for _, p := range p.rules {
 		b, err := json.Marshal(p)
