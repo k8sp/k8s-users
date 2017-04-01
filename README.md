@@ -26,11 +26,29 @@
   - namespace: **required** , 需要管理员提供所属的namespace，如果此namespace不存在将会重新创建一个，也可以使用*号表示不限制namespace。
   - email: **required**, 账号开通后将会向此邮箱地址发送一封欢迎邮件，并且在附件中包含tls key。
 
-- 发送邮件：账号创建后，通过`mail`命令，将欢迎信息以及tls信息发送给用户。
-- 部署：工具将会以[addon](https://github.com/kubernetes/kubernetes/tree/master/cluster/addons)的形式部署在Kubernetes集群的master节点，将集群的`ca.pem`和`ca-key.pem`以hostpath的方式mount到Pod中。
+- 发送邮件：
+
+  账号创建后，会自动发送欢迎信息和附件形式的tls key发送给用户。
+- 部署：
+
+  工具将会以[addon](https://github.com/kubernetes/kubernetes/tree/master/cluster/addons)的形式部署在Kubernetes集群的master节点.
+- 数据存储
+  - 将集群的`ca.pem`和`ca-key.pem`以hostpath的方式mount到Pod中。
+  - 为每个用户生成的key将会在本地保存一份副本，如果以同样的用户名请求，将不会生成新的key，保存的路径也会以hostpath的方式mount到mount到Pod中,Pod中的目录结构如下：
+      ```bash
+          /var/users
+              `-<username>
+                |-<username>-key.pem
+                |-<username>.pem
+                `-<username>.csr
+
+      ```
+  - 因为每个用户的权限要更新到集群的权限配置文件，一般会命名为`abac_policy.jsonl`，也需要将此文件mount到Pod中。
+
 
 
 ## TODO
-
-- 工具的接口需要通过认证才可以正常的接收请求
+- 使用[Docker Client](https://github.com/docker/docker/tree/master/client) 重启APIServer，使用policy文件生效
+- 增加发送email的流程
+- 接口的访问需要认证机制
 - 提供方便操作的web界面
