@@ -44,9 +44,9 @@ func (p *Policy) Exists(u Users) bool {
 func (p *Policy) Update(u Users) {
 	for i, r := range p.rules {
 		if r.spec.user == u.Username {
-			p.rules[i] = makeRule(u.Username, u.Namespace)
+			p.rules[i] = newRule(u.Username, u.Namespace)
 		} else if r.spec.user == getDefaultServiceAcccount(u.Namespace) {
-			p.rules[i] = makeRule(getDefaultServiceAcccount(u.Namespace), u.Namespace)
+			p.rules[i] = newRule(getDefaultServiceAcccount(u.Namespace), u.Namespace)
 		} else {
 			continue
 		}
@@ -55,8 +55,8 @@ func (p *Policy) Update(u Users) {
 
 // Append new policy at the end of policies
 func (p *Policy) Append(u Users) {
-	p.rules = append(p.rules, makeRule(u.Username, u.Namespace))
-	p.rules = append(p.rules, makeRule(u.Username, u.Namespace))
+	p.rules = append(p.rules, newRule(u.Username, u.Namespace))
+	p.rules = append(p.rules, newRule(u.Username, u.Namespace))
 }
 
 //LoadPoliciesfromJSONFile init policy struct with json file
@@ -77,8 +77,8 @@ func LoadPoliciesfromJSONFile(filename string) (Policy, error) {
 	return p, nil
 }
 
-//ToJSONFile  write to a file formated json
-func (p *Policy) ToJSONFile(filename string) error {
+//DumpJSONFile write policy to a file formated json
+func (p *Policy) DumpJSONFile(filename string) error {
 	lines := []string{}
 	for _, p := range p.rules {
 		b, err := json.Marshal(p)
@@ -89,7 +89,7 @@ func (p *Policy) ToJSONFile(filename string) error {
 	return e
 }
 
-func makeRule(username, namespace string) Rule {
+func newRule(username, namespace string) Rule {
 	spec := Spec{
 		user:            username,
 		namespace:       namespace,

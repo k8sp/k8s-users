@@ -53,7 +53,7 @@ func makeUsersHandler(caKey, caCrt, certFilesRootPath, abacPolicyFile string) ht
 		} else {
 			p.Append(u)
 		}
-		p.ToJSONFile(abacPolicyFile)
+		p.DumpJSONFile(abacPolicyFile)
 
 		// update cert files
 		users.WriteCertFiles(caKey, caCrt, certFilesRootPath, u.Username)

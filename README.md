@@ -28,7 +28,7 @@
 
 - 发送邮件：
 
-  账号创建后，通过`mail`命令，将欢迎信息以及tls信息发送给用户。
+  账号创建后，会自动发送欢迎信息和附件形式的tls key发送给用户。
 - 部署：
 
   工具将会以[addon](https://github.com/kubernetes/kubernetes/tree/master/cluster/addons)的形式部署在Kubernetes集群的master节点.
