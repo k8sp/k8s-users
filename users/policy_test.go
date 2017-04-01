@@ -8,6 +8,6 @@ import (
 )
 
 func TestGetDefaultServiceAcccount(t *testing.T) {
-	username := getDefaultServiceAcccount("test")
-	assert.True(t, strings.EqualFold(username, "system:serviceaccount:test:default"))
+	namespace := getDefaultServiceAcccount("test")
+	assert.True(t, strings.EqualFold(namespace, "system:serviceaccount:test:default"))
 }
