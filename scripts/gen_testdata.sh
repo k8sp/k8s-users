@@ -1,5 +1,6 @@
 #!/bin/bash
 set -x
+
 root=$1
 users_path=$root/users
 policy_file=$root/abac-policy.jsonl
@@ -17,5 +18,5 @@ cat > $policy_file <<EOF
 EOF
 
 # generate root cert files
-openssl genrsa -out $root/key.pem 2048
-openssl req -x509 -new -nodes -key $root/key.pem -days 10000 -out $root/crt.pem -subj "/CN=k8s-users"
+openssl genrsa -out $root/ca.key 2048
+openssl req -x509 -new -nodes -key $root/ca.key -days 10000 -out $root/ca.crt -subj "/CN=k8s-users"

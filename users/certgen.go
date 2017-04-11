@@ -11,18 +11,19 @@ import (
 )
 
 // genCerts  generate key and crt files
-func genCerts(caKey, caCrt, username string) ([]byte, []byte) {
+func genCerts(caCrt, caKey, username string) ([]byte, []byte) {
 	out, e := ioutil.TempDir("", "")
-	key := path.Join(out, username+"-key.pem")
-	csr := path.Join(out, username+"-csr.pem")
-	crt := path.Join(out, username+"-crt.pem")
-
 	candy.Must(e)
+
 	defer func() {
 		if e = os.RemoveAll(out); e != nil {
 			log.Printf("certgen.Gen failed deleting %s", out)
 		}
 	}()
+
+	key := path.Join(out, username+"-key.pem")
+	csr := path.Join(out, username+"-csr.pem")
+	crt := path.Join(out, username+"-crt.pem")
 
 	//openssl genrsa -out <username>-key.pem 2048
 	//openssl req -new -key <username>-key.pem -out <username>.csr -subj "/CN=$1"
@@ -48,7 +49,7 @@ func WriteCertFiles(caCrt, caKey, certRootPath, username string) {
 	if _, err := os.Stat(userPath); os.IsNotExist(err) {
 		os.Mkdir(userPath, 0744)
 	}
-	key, crt := genCerts(caKey, caCrt, username)
+	key, crt := genCerts(caCrt, caKey, username)
 	crtFile := path.Join(userPath, username+"-crt.pem")
 	keyFile := path.Join(userPath, username+"-key.pem")
 
