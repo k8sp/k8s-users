@@ -14,10 +14,9 @@
 - HTTP接口：工具会对外提供一个HTTP的接口供管理员调用，接口中定义了用户名，所属namespace，邮箱地址等信息：
 
   ```bash
-  curl -X POST http://localhost:8080/users -d '[
+  curl -X POST http://kube-master:<port>/users -d '[
   {"username":"admin","namespace":"admin","email":"admin@domain.com"},
   {"username":"test","namespace":"test","email":"test@domain.com"}
-
   ]'
   ```
 
