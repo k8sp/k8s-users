@@ -169,9 +169,12 @@ func makeUsersHandler(caKey, caCrt, certFilesRootPath, abacPolicyFile string, sm
 			smtp.sendEmail(u.Email, crtFile, keyFile)
 		}
 
+		//save user policy
 		p.DumpJSONFile(abacPolicyFile)
 
-		restartApiserver()
+		// restart apiserver to active the new PolicyFile
+		err = shell("docker restart $(docker ps | grep apiserver | awk '{print $1}')")
+		candy.Must(err)
 		//TODO: implement function by docker client:https://github.com/docker/docker/tree/master/client
 
 	})
@@ -189,10 +192,9 @@ func makeSafeHandler(h http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func restartApiserver() {
-	cmd := exec.Command("docker", "ps", "$(docker ps | grep ubuntu)")
-	err := cmd.Run()
-	if err != nil {
-		glog.Fatal(err)
+func shell(cmd string) error {
+	if err := exec.Command("bash", "-c", cmd).Run(); err != nil {
+		return err
 	}
+	return nil
 }
