@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"os/exec"
 
 	"github.com/golang/glog"
 	"github.com/gorilla/mux"
@@ -26,25 +27,34 @@ func main() {
 	caKey := flag.String("ca-key", "", "CA private key file, in PEM format")
 	abacPolicyFile := flag.String("abac-policy", defaultABACPolicyFile, "Policy file with ABAC mode.")
 	certFilesRootPath := flag.String("cert-root-path", defaultCertFilesRootPath, "cert files root directory")
+	adminEmail := flag.String("admin-email", "", "admin's email to send crt and key for users, like: admin@domain.com")
+	adminSecrt := flag.String("admin-secrt", "", "admin's secrt to send crt and key for users")
+	smtpsrv := flag.String("smtp-svc-addr", "", "SMTP server address with port")
 
 	flag.Parse()
 
-	if len(*caCrt) == 0 || len(*caKey) == 0 {
-		glog.Fatal("Files ca.pem and ca-key.pem should be provided.")
+	if len(*caCrt) == 0 || len(*caKey) == 0 || len(*adminEmail) == 0 || len(*adminSecrt) == 0 || len(*smtpsrv) == 0 {
+		glog.Fatal("Files ca.pem , ca-key.pem , admin email and secrt, smtp server address should be provided.")
 	}
+
+	smtp := users.NewSmtpInfo(*smtpsrv, *adminEmail, *adminSecrt)
 
 	// start and run the HTTP server
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/users", makeUsersHandler(*caKey, *caCrt, *certFilesRootPath, *abacPolicyFile))
+	router.HandleFunc("/users", makeUsersHandler(*caKey, *caCrt, *certFilesRootPath, *abacPolicyFile, smtp))
 	glog.Fatal(http.ListenAndServe(*addr, router))
 }
 
-func makeUsersHandler(caKey, caCrt, certFilesRootPath, abacPolicyFile string) http.HandlerFunc {
+func makeUsersHandler(caKey, caCrt, certFilesRootPath, abacPolicyFile string, smtp *users.SmtpInfo) http.HandlerFunc {
 	return makeSafeHandler(func(w http.ResponseWriter, r *http.Request) {
+		// smtp message pool
+		go smtp.SMTPSvcPool()
+
 		// load ABAC policy file
 		p, err := users.LoadPoliciesfromJSONFile(abacPolicyFile)
 		candy.Must(err)
 
+		//gen Policy for user
 		var us []users.Users
 
 		b, err := ioutil.ReadAll(r.Body)
@@ -70,12 +80,19 @@ func makeUsersHandler(caKey, caCrt, certFilesRootPath, abacPolicyFile string) ht
 			}
 
 			// update cert files
-			users.WriteCertFiles(caCrt, caKey, certFilesRootPath, u.Username)
+			crtFile, keyFile := users.WriteCertFiles(caCrt, caKey, certFilesRootPath, u.Username)
+
+			// send email
+			smtp.SendEmail(u.Email, crtFile, keyFile)
 		}
 
+		//save user policy
 		p.DumpJSONFile(abacPolicyFile)
 
-		// TODO: implement function by docker client:https://github.com/docker/docker/tree/master/client
+		// restart apiserver to active the new PolicyFile
+		_ = shell("docker restart $(docker ps | grep apiserver | awk '{print $1}')")
+		//TODO: implement function by docker client:https://github.com/docker/docker/tree/master/client
+
 	})
 }
 
@@ -89,4 +106,11 @@ func makeSafeHandler(h http.HandlerFunc) http.HandlerFunc {
 
 		h(w, r)
 	}
+}
+
+func shell(cmd string) error {
+	if err := exec.Command("bash", "-c", cmd).Run(); err != nil {
+		return err
+	}
+	return nil
 }

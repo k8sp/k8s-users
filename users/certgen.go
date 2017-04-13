@@ -44,18 +44,23 @@ func genCerts(caCrt, caKey, username string) ([]byte, []byte) {
 }
 
 //WriteCertFiles generate cert files in #certRootPath
-func WriteCertFiles(caCrt, caKey, certRootPath, username string) {
+func WriteCertFiles(caCrt, caKey, certRootPath, username string) (crtFile, keyFile string) {
 	userPath := path.Join(certRootPath, username)
+
 	if _, err := os.Stat(userPath); os.IsNotExist(err) {
 		os.Mkdir(userPath, 0744)
 	}
+
 	key, crt := genCerts(caCrt, caKey, username)
-	crtFile := path.Join(userPath, username+"-crt.pem")
-	keyFile := path.Join(userPath, username+"-key.pem")
+
+	crtFile = path.Join(userPath, username+"-crt.pem")
+	keyFile = path.Join(userPath, username+"-key.pem")
 
 	err := ioutil.WriteFile(crtFile, crt, 0644)
 	candy.Must(err)
 
 	err = ioutil.WriteFile(keyFile, key, 0644)
 	candy.Must(err)
+
+	return
 }
