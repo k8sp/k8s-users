@@ -1,13 +1,17 @@
 package users
 
 import (
+	"crypto/rsa"
+	"crypto/x509"
 	"io/ioutil"
 	"log"
 	"os"
 	"path"
+	"time"
 
 	"github.com/k8sp/sextant/golang/certgen"
 	"github.com/topicai/candy"
+	"github.com/zh794390558/go-study/cert/gencrt"
 )
 
 // genCerts  generate key and crt files
@@ -43,6 +47,32 @@ func genCerts(caCrt, caKey, username string) ([]byte, []byte) {
 	return k, c
 }
 
+func genUserCert(caCrt, caKey, userName string) (key []byte, crt []byte) {
+	var cacrt *x509.Certificate
+	var cakey *rsa.PrivateKey
+	var err error
+
+	//load caCrt
+	cacrt, err = gencrt.ParseCertificate(caCrt)
+	candy.Must(err)
+
+	//load caKey
+	cakey, err = gencrt.ParseRSAPrivateKey(caKey)
+	candy.Must(err)
+
+	//gen key
+	var priv interface{}
+	priv, err = gencrt.GenerateRSAPrivKey(2048)
+	candy.Must(err)
+	key = gencrt.PemEncodeToMemory(gencrt.PemBlockForKey(priv))
+
+	//gen crt
+	derBytes := gencrt.CreateUserCertificate(cacrt, cakey, priv, "testUser", 24*time.Hour)
+	crt = gencrt.PemEncodeToMemory(gencrt.PemBlockForCrt(derBytes))
+
+	return
+}
+
 //WriteCertFiles generate cert files in #certRootPath
 func WriteCertFiles(caCrt, caKey, certRootPath, username string) (crtFile, keyFile string) {
 	userPath := path.Join(certRootPath, username)
@@ -51,7 +81,8 @@ func WriteCertFiles(caCrt, caKey, certRootPath, username string) (crtFile, keyFi
 		os.Mkdir(userPath, 0744)
 	}
 
-	key, crt := genCerts(caCrt, caKey, username)
+	//key, crt := genCerts(caCrt, caKey, username)
+	key, crt := genUserCert(caCrt, caKey, username)
 
 	crtFile = path.Join(userPath, username+"-crt.pem")
 	keyFile = path.Join(userPath, username+"-key.pem")
