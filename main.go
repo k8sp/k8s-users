@@ -13,6 +13,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/k8sp/k8s-users/users"
 	"github.com/topicai/candy"
+	"github.com/zh794390558/go-study/email"
 )
 
 const (
@@ -37,7 +38,7 @@ func main() {
 		glog.Fatal("Files ca.pem , ca-key.pem , admin email and secrt, smtp server address should be provided.")
 	}
 
-	smtp := users.NewSmtpInfo(*smtpsrv, *adminEmail, *adminSecrt)
+	smtp := email.NewSmtpInfo(*smtpsrv, *adminEmail, *adminSecrt)
 
 	// start and run the HTTP server
 	router := mux.NewRouter().StrictSlash(true)
@@ -45,7 +46,7 @@ func main() {
 	glog.Fatal(http.ListenAndServe(*addr, router))
 }
 
-func makeUsersHandler(caKey, caCrt, certFilesRootPath, abacPolicyFile string, smtp *users.SmtpInfo) http.HandlerFunc {
+func makeUsersHandler(caKey, caCrt, certFilesRootPath, abacPolicyFile string, smtp *email.SmtpInfo) http.HandlerFunc {
 	return makeSafeHandler(func(w http.ResponseWriter, r *http.Request) {
 		// smtp message pool
 		go smtp.SMTPSvcPool()
