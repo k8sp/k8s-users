@@ -1,14 +1,19 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os/exec"
+	"strings"
 
+	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/client"
 	"github.com/golang/glog"
 	"github.com/gorilla/mux"
 	"github.com/k8sp/k8s-users/users"
@@ -17,9 +22,8 @@ import (
 )
 
 const (
-	defaultABACPolicyFile         = "./testdata/abac-policy.jsonl"
-	defaultRestartAPIServerScript = "./scripts/restart_apiserver.sh"
-	defaultCertFilesRootPath      = "./testdata/users"
+	defaultABACPolicyFile    = "./abac-policy.jsonl"
+	defaultCertFilesRootPath = "./users"
 )
 
 func main() {
@@ -91,7 +95,9 @@ func makeUsersHandler(caKey, caCrt, certFilesRootPath, abacPolicyFile string, sm
 		p.DumpJSONFile(abacPolicyFile)
 
 		// restart apiserver to active the new PolicyFile
-		_ = shell("docker restart $(docker ps | grep apiserver | awk '{print $1}')")
+		//_ = shell("docker restart $(docker ps | grep apiserver | awk '{print $1}')")
+		err = RestartDocker("apiserver")
+		candy.Must(err)
 		//TODO: implement function by docker client:https://github.com/docker/docker/tree/master/client
 
 	})
@@ -107,6 +113,38 @@ func makeSafeHandler(h http.HandlerFunc) http.HandlerFunc {
 
 		h(w, r)
 	}
+}
+
+// use env to create client
+// DOCKER_API_VERSION
+// DOCKER_HOST
+// DOCKER_CERT_PATH
+// DOCKER_TLS_VERIFY
+func RestartDocker(s string) error {
+	ctx := context.Background()
+
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		return err
+	}
+
+	containers, err := cli.ContainerList(ctx, types.ContainerListOptions{})
+	if err != nil {
+		return err
+	}
+
+	for _, c := range containers {
+		fmt.Println(c)
+		if strings.Contains(c.Command, s) {
+			if err := cli.ContainerRestart(ctx, c.ID, nil); err != nil {
+				return err
+			} else {
+				return nil
+			}
+		}
+	}
+
+	return errors.New("No found continaer!.")
 }
 
 func shell(cmd string) error {
