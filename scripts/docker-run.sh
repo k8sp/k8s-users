@@ -13,7 +13,7 @@ SMTP_ADDR="smtp.partner.outlook.cn:587"
 EMAIL="admin@email.com"
 SECRT="admin"
 
-docker run -d -p 8080:80 \
+docker run -d -p 8091:80 \
     -v '/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt'\
     -v '/var/run/docker.sock:/var/run/docker.sock'\
     -v "${CONFIG}:${CONFIG}"\
