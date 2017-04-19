@@ -5,6 +5,6 @@ clean:
 run:
 	go build && ./scripts/run.sh
 build:
-	go build && cp k8s-users build && docker build -t k8s-users build 
+	go build && cp k8s-users build && docker build -t zh794390558/k8s-users build 
 docker-run:
 	./scripts/docker-run.sh
