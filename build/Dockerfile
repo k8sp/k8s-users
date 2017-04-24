@@ -1,8 +1,8 @@
-FROM  ubuntu:14.04
+FROM golang 
 
 WORKDIR /kube-users
 
-EXPOSE 80
+EXPOSE 8030
 
 COPY ["k8s-users", "run.sh", "/kube-users/"]
 

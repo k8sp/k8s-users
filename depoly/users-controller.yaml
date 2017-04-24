@@ -6,7 +6,6 @@ metadata:
     labels:
         k8s-app: kubernetes-users
         kubernetes.io/cluster-service: "true"
-        addonmanager.kubernetes.io/mode: Reconcile
 spec:
     selector:
         matchLabels:
@@ -15,21 +14,14 @@ spec:
         metadata:
             labels:
                 k8s-app: kubernetes-users
-            annotations:
-                scheduler.alpha.kubernetes.io/critical-pod: ''
         spec:
+            nodeName: 0c-c4-7a-15-e1-9c
             containers:
               - name: kubernetes-users
-                image: zh794390558/k8s-users
-                resources:
-                    limits:
-                        cpu: 100m
-                        memory: 20Mi
-                    requests:
-                        cpu: 100m
-                        memory: 20Mi
+                image: bootstrapper:5000/zhanghui/k8s-users
                 ports:
-                - containerPort: 80
+                - containerPort: 8030
+                  protocol: TCP
                 env:
                  - name: ABAC_POLICY_FILE
                    value: /etc/kubernetes/abac/policy.jsonl
@@ -40,18 +32,23 @@ spec:
                  - name: SMTP_SVC_ADDR 
                    value: "smtp.partner.outlook.cn:587" 
                  - name: ADMIN_EMAIL 
-                   value: "zhanghui@unisound.com" 
+                   value: "admin@unisound.com" 
                  - name: ADMIN_SECRT 
-                   value: "zh...1234" 
+                   value: "...." 
                  - name:  ADDR 
-                   value: ":80" 
+                   value: ":8030" 
                 volumeMounts:
                 - name: ssl-ca
                   readOnly: true
                   mountPath: /etc/ssl/certs
                 - name: docker-sock 
                   mountPath: /var/run
+                - name: kube-config
+                  mountPath: /etc/kubernetes
             volumes: 
+             - name: kube-config 
+               hostPath:
+                  path:  /etc/kubernetes
              - name: ssl-ca
                hostPath:
                   path:  /etc/ssl/certs

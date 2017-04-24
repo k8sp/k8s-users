@@ -14,7 +14,7 @@ EMAIL="admin@email.com"
 SECRT="admin"
 
 docker run -d -p 8091:80 \
-    -v '/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt'\ # used for email tls
+    -v "/etc/ssl/certs:/etc/ssl/certs"\ # user for email TLS
     -v '/var/run/docker.sock:/var/run/docker.sock'\ # used for docker client to communicate to docker daemon
     -v "${CONFIG}:${CONFIG}"\
     -e ABAC_POLICY_FILE="${POLICY}"\

@@ -13,5 +13,5 @@ spec:
         k8s-app: kubernetes-users
     ports:
     - port: 80
-      targetPort: 80
-      nodePort: 32010
+      targetPort: 8030
+      nodePort: 32019
