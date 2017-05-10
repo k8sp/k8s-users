@@ -12,6 +12,6 @@ spec:
     selector:
         k8s-app: kubernetes-users
     ports:
-    - port: 80
-      targetPort: 8030
-      nodePort: 32019
+    - port: 80  # service port
+      targetPort: 8030 # container port
+      nodePort: 32019 # node port
