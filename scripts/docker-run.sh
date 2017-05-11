@@ -23,5 +23,5 @@ docker run -d -p 8091:80 \
     -e SMTP_SVC_ADDR=${SMTP_ADDR}\
     -e ADMIN_EMAIL=${EMAIL}\
     -e ADMIN_SECRT=${SECRT}\
-    -e ADDR=":80"\
+    -e ADDR=":80"\  # the port user service listen on 
     k8s-users 

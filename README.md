@@ -44,6 +44,41 @@
   - 因为每个用户的权限要更新到集群的权限配置文件，一般会命名为`abac_policy.jsonl`，也需要将此文件mount到Pod中。
 
 
+## 目录结构
+.
+├── build           # build docker
+│   ├── Dockerfile
+│   ├── k8s-users
+│   └── run.sh
+├── deploy          # kubernetes deoplyment and service yaml
+│   ├── users-controller.yaml
+│   └── users-service.yaml
+├── main.go          # main function
+├── main_test.go  
+├── makefile         # build bin, docker and run 
+├── README.md
+├── scripts          # some test scripts
+│   ├── docker-run.sh   # run docker local
+│   ├── gen_testdata.sh # generate test data
+│   ├── run.sh          # local run
+│   └── test.cmd        # some test cmd list
+├── testdata         #test data
+│   ├── abac-policy.jsonl  # ABAC policy file
+│   ├── ca.crt             # cluster CA
+│   ├── ca.key             # cluster key
+│   └── users              # store user key and crt
+└── users  # users module code
+    ├── certgen.go
+    ├── certgen_test.go
+    ├── policy.go
+    ├── policy_test.go
+    └── utils.go
+
+# 运行
+```bash
+make build
+kubectl create -f deploy
+```
 
 ## TODO
 - 使用[Docker Client](https://github.com/docker/docker/tree/master/client) 重启APIServer，使用policy文件生效 [Done]
