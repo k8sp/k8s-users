@@ -92,7 +92,8 @@ func makeUsersHandler(caKey, caCrt, certFilesRootPath, abacPolicyFile string, sm
 			crtFile, keyFile := users.WriteCertFiles(caCrt, caKey, certFilesRootPath, u.Username)
 
 			// send email
-			smtp.SendEmail(u.Email, crtFile, keyFile)
+			err := smtp.SendEmail(u.Email, crtFile, keyFile)
+			candy.Must(err)
 		}
 
 		//save user policy
@@ -138,12 +139,14 @@ func RestartDocker(s string) error {
 	}
 
 	for _, c := range containers {
-		fmt.Println("container:", c)
-		if strings.Contains(c.Command, s) {
-			if err := cli.ContainerRestart(ctx, c.ID, nil); err != nil {
-				return err
-			} else {
-				return nil
+		fmt.Println("container:", c.Names)
+		for _, n := range c.Names {
+			if strings.Contains(n, s) {
+				if err := cli.ContainerRestart(ctx, c.ID, nil); err != nil {
+					return err
+				} else {
+					return nil
+				}
 			}
 		}
 	}

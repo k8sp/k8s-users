@@ -74,11 +74,15 @@
     ├── policy_test.go
     └── utils.go
 
-# 运行
+## 运行
 ```bash
 make build
 kubectl create -f deploy
 ```
+
+## Attansion
+
+* gomail 包使用 `/etc/ssl/certs/ca-certificates.crt` 文件完成与 SMTP 的 TLS 链接.
 
 ## TODO
 - 使用[Docker Client](https://github.com/docker/docker/tree/master/client) 重启APIServer，使用policy文件生效 [Done]
