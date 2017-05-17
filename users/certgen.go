@@ -11,7 +11,7 @@ import (
 
 	"github.com/k8sp/sextant/golang/certgen"
 	"github.com/topicai/candy"
-	"github.com/zh794390558/go-study/cert/gencrt"
+	"github.com/zh794390558/go-libs/cert/gencrt"
 )
 
 // genCerts  generate key and crt files

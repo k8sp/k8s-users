@@ -18,7 +18,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/k8sp/k8s-users/users"
 	"github.com/topicai/candy"
-	"github.com/zh794390558/go-study/email"
+	"github.com/zh794390558/go-libs/email"
 )
 
 const (
