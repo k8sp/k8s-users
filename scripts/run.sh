@@ -5,5 +5,6 @@
         -ca-crt ./testdata/ca.crt\
         -ca-key ./testdata/ca.key \
         -smtp-svc-addr "smtp.partner.outlook.cn:587"\
-        -admin-email "..." \
-        -admin-secrt ""
+        -admin-email "admin@mail.com" \
+        -admin-secrt 'admin' \ 
+        -addr ":8080"
