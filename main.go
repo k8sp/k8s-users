@@ -41,7 +41,8 @@ func main() {
 	flag.Parse()
 
 	if len(*caCrt) == 0 || len(*caKey) == 0 || len(*adminEmail) == 0 || len(*adminSecrt) == 0 || len(*smtpsrv) == 0 {
-		glog.Fatal("Files ca.pem , ca-key.pem , admin email and secrt, smtp server address should be provided.")
+		glog.Errorln("Files ca.pem , ca-key.pem , admin email and secrt, smtp server address should be provided.")
+		return
 	}
 
 	// smtp info structure
