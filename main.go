@@ -93,7 +93,7 @@ func makeUsersHandler(caKey, caCrt, certFilesRootPath, abacPolicyFile string, sm
 			crtFile, keyFile := users.WriteCertFiles(caCrt, caKey, certFilesRootPath, u.Username)
 
 			// send email
-			err := smtp.SendEmail(u.Email, crtFile, keyFile)
+			err := smtp.SendEmail(u.Email, caCrt, crtFile, keyFile)
 			candy.Must(err)
 		}
 
