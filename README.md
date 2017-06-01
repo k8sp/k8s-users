@@ -84,6 +84,18 @@ kubectl create -f deploy
 
 * gomail 包使用 `/etc/ssl/certs/ca-certificates.crt` 文件完成与 SMTP 的 TLS 链接.
 
+## FAQ
+
+* POD DNS error
+
+  ssl_flag=false open_flag=false err=dial tcp 42.159.163.194:587: i/o timeout
+  or ssl_flag=false open_flag=false err=dial tcp: lookup smtp.partner.outlook.cn on 10.100.0.10:53: dial udp 10.100.0.10:53: i/o timeout
+
+  原因是不能做外部域名解析。需要修改 `kube-dns` 的 `dnsmasq` 的配置，添加 `--server=10.10.15.253 --all-servers`。
+  `10.10.15.253` 是一个外部可用的 DNS。
+
+
+
 ## TODO
 - 使用[Docker Client](https://github.com/docker/docker/tree/master/client) 重启APIServer，使用policy文件生效 [Done]
 - 增加发送email的流程 [Done]
