@@ -1,4 +1,8 @@
-FROM golang 
+FROM alpine 
+
+RUN set -ex && \
+    apk update && \
+    apk add ca-certificates
 
 WORKDIR /kube-users
 
@@ -7,4 +11,4 @@ EXPOSE 8030
 
 COPY ["k8s-users", "run.sh", "/kube-users/"]
 
-CMD ["/kube-users/run.sh"]
+ENTRYPOINT ["/kube-users/run.sh"]

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh 
 
 #
 #  This envs must be set, e.g.: 
