@@ -82,7 +82,7 @@ kubectl create -f deploy
 
 ## Attansion
 
-* gomail 包使用 `/etc/ssl/certs/ca-certificates.crt` 文件完成与 SMTP 的 TLS 链接.
+* gomail 包使用 `/etc/ssl/certs/ca-certificates.crt` 文件完成与 SMTP 的 TLS 链接. 可以 mount host 上的对应目录, 也可以在 image 中 install, 目前使用的是后者。
 
 ## FAQ
 
