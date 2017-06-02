@@ -38,9 +38,6 @@ spec:
                  - name:  ADDR 
                    value: ":8030" 
                 volumeMounts:
-                - name: ssl-ca
-                  readOnly: true
-                  mountPath: /etc/ssl/certs
                 - name: docker-sock 
                   mountPath: /var/run
                 - name: kube-config
@@ -49,9 +46,6 @@ spec:
              - name: kube-config 
                hostPath:
                   path:  /etc/kubernetes
-             - name: ssl-ca
-               hostPath:
-                  path:  /etc/ssl/certs
              - name: docker-sock
                hostPath:
                   path:  /var/run
