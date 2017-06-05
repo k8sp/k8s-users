@@ -67,7 +67,8 @@ func genUserCert(caCrt, caKey, userName string) (key []byte, crt []byte) {
 	key = gencrt.PemEncodeToMemory(gencrt.PemBlockForKey(priv))
 
 	//gen crt
-	derBytes := gencrt.CreateUserCertificate(cacrt, cakey, priv, "testUser", 24*time.Hour)
+	CN := userName
+	derBytes := gencrt.CreateUserCertificate(cacrt, cakey, priv, CN, 24*time.Hour)
 	crt = gencrt.PemEncodeToMemory(gencrt.PemBlockForCrt(derBytes))
 
 	return
@@ -81,6 +82,7 @@ func WriteCertFiles(caCrt, caKey, certRootPath, username string) (crtFile, keyFi
 		os.MkdirAll(userPath, 0744)
 	}
 
+	//generate crt and key
 	//key, crt := genCerts(caCrt, caKey, username)
 	key, crt := genUserCert(caCrt, caKey, username)
 
